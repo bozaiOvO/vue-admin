@@ -70,7 +70,7 @@ service.interceptors.response.use(
   })
 function http(data){
   if(data.method.toLowerCase() === 'post'){
-    data.data = qs.stringify(data.data);
+    data.data = qs.stringify(data.data,{arrayFormat: 'repeat'});
   }
   return service(data);
 }

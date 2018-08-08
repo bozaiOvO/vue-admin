@@ -6,12 +6,6 @@ function URLstr(strName,str){
   params.append(strName,str)
   return params
 }
-function getImgList(page) {
-  return request({
-    url: '/material/imgList/' + page,
-    method: 'get'
-  })
-}
 //获取所有的图片
 function getMaterialList(groupId='',pageNumber='',limit='') {
   return request({
@@ -22,12 +16,25 @@ function getMaterialList(groupId='',pageNumber='',limit='') {
 //删除图片
 function delMaterialImg(id) {
   return request({
-    url: '/api/material/delImg?id='+id,
+    url: '/api/material/del?id='+id,
     method:'get'
   })
 }
+function addMaterialImg(type,id,title,author,groupId){
+  return request({
+    url: '/api/material/add',
+    method:'post',
+    data: {
+      type,
+      id,
+      title,
+      author,
+      groupId
+    }
+  })
+}
 //获取所有分组
-function getGrouping() {
+function getGrouping(obj) {
   return request({
     url: '/api/group/list',
     method: 'get'
@@ -54,8 +61,6 @@ function delGroup(id){
 }
 //重命名分组
 function renameGroup(id,groupName){
-  console.log(id)
-  console.log(groupName)
   return request({
     url: '/api/group/reName',
     method: 'post',
@@ -65,11 +70,25 @@ function renameGroup(id,groupName){
     }
   })
 }
+//移动分组
+function changeGroup(id,groupId){
+  return request({
+    url: '/api/material/changeGroup',
+    method:'post',
+    data:{
+      id,
+      groupId
+    }
+  })
+}
 export default({
   getGrouping,
   addGroup,
   delGroup,
   getMaterialList,
-  renameGroup
+  renameGroup,
+  addMaterialImg,
+  changeGroup,
+  delMaterialImg
 })
 

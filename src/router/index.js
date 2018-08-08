@@ -330,7 +330,7 @@ export const asyncRouterMap = [
   {
     path: '/material',
     component: Layout,
-    children: [{ path: 'material', component: () => import('@/views/material/material'), name: 'material', meta: { title: 'material', icon: 'component' }}]
+    children: [{ path: 'index', component: () => import('@/views/material/index'), name: 'material', meta: { title: 'material', icon: 'component' }}]
   },
   // 这个是文章相关
   {
