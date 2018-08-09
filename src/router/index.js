@@ -61,6 +61,16 @@ export const constantRouterMap = [
       name: 'guide',
       meta: { title: 'guide', icon: 'guide', noCache: true }
     }]
+  },
+  {
+    path: '/content',
+    component: Layout,
+    children: [{
+      path: 'article/edit',
+      component: () => import('@/views/article/editMdArticle'),
+      name: 'article.edit',
+      meta: { title: '文章编辑', icon: 'edit', noCache: true }
+    }]
   }
 ]
 
@@ -71,6 +81,23 @@ export default new Router({
 })
 
 export const asyncRouterMap = [
+
+// 这个是文章相关
+  {
+    path: '/content',
+    component: Layout,
+    name: 'content',
+    meta: {
+      title: '内容管理',
+      icon: 'excel'
+    },
+    children: [
+      { path: 'article', component: () => import('@/views/article/index'), name: 'articleList', meta: { title: '文章管理' }},
+      { path: 'material', component: () => import('@/views/material/index'), name: 'materialList', meta: { title: '素材管理' }}
+
+    ]
+  },
+  { path: '*', redirect: '/404', hidden: true },
   {
     path: '/permission',
     component: Layout,
@@ -325,28 +352,6 @@ export const asyncRouterMap = [
     path: '/i18n',
     component: Layout,
     children: [{ path: 'index', component: () => import('@/views/i18n-demo/index'), name: 'i18n', meta: { title: 'i18n', icon: 'international' }}]
-  },
-  // 这个是资源管理
-  {
-    path: '/material',
-    component: Layout,
-    children: [{ path: 'index', component: () => import('@/views/material/index'), name: 'material', meta: { title: 'material', icon: 'component' }}]
-  },
-  // 这个是文章相关
-  {
-    path: '/article',
-    component: Layout,
-    redirect: '/article/articleList',
-    name: 'article',
-    meta: {
-      title: 'article',
-      icon: 'excel'
-    },
-    children: [
-      { path: 'articleList', component: () => import('@/views/article/articleList'), name: 'articleList', meta: { title: '文章列表' }},
-      { path: 'editMdArticle', component: () => import('@/views/article/editMdArticle'), name: 'editMdArticle', meta: { title: 'makeDown编辑' }},
-      { path: 'editRichTextArticle', component: () => import('@/views/article/editRichTextArticle'), name: 'editRichTextArticle', meta: { title: '富文本编辑' }}
-    ]
-  },
-  { path: '*', redirect: '/404', hidden: true }
+  }
+
 ]
