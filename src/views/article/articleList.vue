@@ -17,13 +17,6 @@
       type="selection"
       width="50">
     </el-table-column>
-    <!-- <el-table-column
-      fixed
-      prop="id"
-      label="id"
-      width="70"
-      >
-    </el-table-column> -->
     <el-table-column
       prop="title"
       label="title"
@@ -36,7 +29,7 @@
       width="120">
     </el-table-column>
     <el-table-column
-      prop="display_time"
+      prop="addTime"
       label="时间"
       width="170">
     </el-table-column>

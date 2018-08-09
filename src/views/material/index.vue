@@ -3,103 +3,135 @@
       <fieldset>
         <legend>资源管理</legend>
       </fieldset>
-      <div class="box">
-        <div class="slidebar">
-          <ul class="slidebar-list">
-            <li v-for="(item,index) of grounping"
-            :key='item.id'
-             :class="{active:currIndex===index}"
-             @click='changeIndex(index)'
-             >{{item.groupName}}
-              <el-button 
-              v-show='item.id==-1?false:true'
-              type="danger" 
-              @click.stop='removeGroup(item.id)'
-              >删除</el-button>
-           </li>
-             <li class="add-group"> 
-              <el-button 
-              type="primary" 
-              class='add-group-btn'
-              @click='addGroupBtn'
-              >添加分组</el-button>
-            </li>
-          </ul>
 
-        </div>
-        <div class="content">
-          <header>
-            <div class="grouping">
-              <span class="">当前分组:</span>
-              <span>{{currentGroup.groupName}}</span>
-              <el-button type="warning" icon="el-icon-edit" class="rename" @click="rename(currentGroup.id)">重命名</el-button>
-              <el-button type="danger" icon="el-icon-delete" @click='removeGroup(currentGroup.id)'>删除分组</el-button>
-            </div>
-            <div class="btn-list">
-              <el-button type="primary" @click='dialogImgVisible=true'>上传作品<i class="el-icon-upload el-icon--right"></i></el-button>
-              <el-button type="primary">选择素材<i class="el-icon-upload el-icon--right"></i></el-button>
-            </div>
-          </header>
-          <main>
-            <div class="sub-header">
-               <el-checkbox
-               :indeterminate="isIndeterminate"
-               v-model="checkAll"
-               @change="handleCheckAllChange"
-               class="checkbox">全选</el-checkbox>
-               <!-- 这里是全选 -->
-              <el-button type="primary" :disabled='checkedCities.length<=0' @click='appearChangeGroup'>移动分组</el-button>
-              <el-button type="primary" :disabled='checkedCities.length<=0' @click='removeMaterial(checkedCities)'>删除素材</el-button>              
-            </div>
-            <ul class="img-list">
-              <li v-for="item of imgList" :key='item.id' >
-                <a class="img" href="javascript:;" :style="{'background-image':'url('+item.ossUrl+')'}"> </a>
-                <p class="img-name">
-                  <!-- 这里是复选img -->
-                  <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
-                    <el-checkbox :label='item.id'> {{item.title}}</el-checkbox>
-                  </el-checkbox-group>
-                </p>
-                
-                <p class="img-date">
-                  <span class="hover-date">{{item.addTime}}</span>
-                  上传时间：{{item.addTime}}
-                </p>
-                <div class="option">
-                  <i class="el-icon-edit font-icon" @click="changeImgName"></i>
-                  <i class="el-icon-picture font-icon" @click="oneChangeGroup(item.id)"></i>
-                  <i class="el-icon-delete font-icon" @click="removeMaterial(item.id)"></i>
-                </div>
-              </li>
-            </ul>
-              <div class="block">
-                <el-pagination
-                  @size-change="handleSizeChange"
-                  @current-change="handleCurrentChange"
-                  :current-page.sync="currentPage"
-                  :page-size="12"
-                  background
-                  layout="prev, pager, next, jumper"
-                  :total="1000">
-                  <span class="demonstration">直接前往</span>
-                </el-pagination>
+        <div >
+          <el-row :gutter="20">
+            <el-col :span="15">
+              <div class="grid-content bg-purple">
+                <div class="content">
+                  <header>
+                    <div class="grouping">
+                      <span class="">当前分组:</span>
+                      <span>{{currentGroup.groupName}}</span>
+                      <el-button type="warning" icon="el-icon-edit" class="rename" @click="rename(currentGroup.id)">重命名</el-button>
+                      <el-button type="danger" icon="el-icon-delete" @click='removeGroup(currentGroup.id)'>删除分组</el-button>
+                      <el-button type="primary" @click='dialogImgVisible=true'>上传作品<i class="el-icon-upload el-icon--right"></i></el-button>
+                    </div>
+                  </header>
+                  <main>
+                    <div class="sub-header">
+                       <el-checkbox
+                       :indeterminate="isIndeterminate"
+                       v-model="checkAll"
+                       @change="handleCheckAllChange"
+                       class="checkbox">全选</el-checkbox>
+                       <!-- 这里是全选 -->
+                      <el-button type="primary" :disabled='checkedCities.length<=0' @click='appearChangeGroup'>移动分组</el-button>
+                      <el-button type="primary" :disabled='checkedCities.length<=0' @click='removeMaterial(checkedCities)'>删除素材</el-button>              
+                    </div>
+                    <ul class="img-list">
+                      <li v-for="item of imgList" :key='item.id' >
+                        <a class="img" href="javascript:;" :style="{'background-image':'url('+item.ossUrl+')'}"> </a>
+                        <div class="tag">
+                          <el-tag
+                            :key="tag"
+                            v-for="tag in tags"
+                            closable
+                            :disable-transitions="false"
+                            size="mini"
+                            @close="handleClose(tag)">
+                            {{tag}}
+                          </el-tag>
+                          <el-input
+                            class="input-new-tag"
+                            v-if="inputVisible"
+                            v-model="inputValue"
+                            ref="saveTagInput"
+                            size="mini"
+                            @keyup.enter.native="handleInputConfirm"
+                            @blur="handleInputConfirm"
+                          >
+                          </el-input>
+                          <el-button v-else class="button-new-tag" size="mini" @click="showInput">+ New Tag</el-button>
+                        </div>
+                        <p class="img-name">
+                          <!-- 这里是复选img -->
+                          <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
+                            <el-checkbox :label='item.id'> {{item.title}}</el-checkbox>
+                          </el-checkbox-group>
+                        </p>
+                        <p class="img-date">
+                          <span class="hover-date">{{item.addTime}}</span>
+                          上传时间：{{item.addTime}}
+                        </p>
+                        <div class="option">
+                          <i class="el-icon-edit font-icon" @click="changeImgName"></i>
+                          <i class="el-icon-picture font-icon" @click="oneChangeGroup(item.id)"></i>
+                          <i class="el-icon-delete font-icon" @click="removeMaterial(item.id)"></i>
+                        </div>
+                      </li>
+                    </ul>
+                      <div class="block">
+                        <el-pagination
+                          @size-change="handleSizeChange"
+                          @current-change="handleCurrentChange"
+                          :current-page.sync="currentPage"
+                          :page-size="12"
+                          background
+                          layout="prev, pager, next, jumper"
+                          :total="1000">
+                          <span class="demonstration">直接前往</span>
+                        </el-pagination>
+                      </div>
+                      <el-dialog title="选择分组" :visible.sync="dialogFormVisible">
+                            <el-select v-model="changeImgGroupId">
+                              <el-option
+                               v-for="item of grounping"
+                               :value=item.id
+                               :label="item.groupName"
+                               :key='item.id'>{{item.groupName}}</el-option>
+                            </el-select>
+                        <div slot="footer" class="dialog-footer">
+                          <el-button @click="dialogFormVisible = false">取 消</el-button>
+                          <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+                        </div>
+                      </el-dialog>
+                  </main>
+                </div>                
               </div>
-              <el-dialog title="选择分组" :visible.sync="dialogFormVisible">
-                    <el-select v-model="changeImgGroupId">
-                      <el-option
-                       v-for="item of grounping"
-                       :value=item.id
-                       :label="item.groupName"
-                       :key='item.id'>{{item.groupName}}</el-option>
-                    </el-select>
-                <div slot="footer" class="dialog-footer">
-                  <el-button @click="dialogFormVisible = false">取 消</el-button>
-                  <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
-                </div>
-              </el-dialog>
-          </main>
+            </el-col>
+            <el-col :span="9">
+              <div class="grid-content bg-purple">
+                <div class="slidebar">
+                  <ul class="slidebar-list">
+                    <li v-for="(item,index) of grounping"
+                    :key='item.id'
+                     :class="{active:currIndex===index}"
+                     @click='changeIndex(index)'
+                     >{{item.groupName}}
+                      <el-button 
+                      v-show='item.id==-1?false:true'
+                      type="danger" 
+                      @click.stop='removeGroup(item.id)'
+                      >删除</el-button>
+                   </li>
+                     <li class="add-group"> 
+                      <el-button 
+                      type="primary" 
+                      class='add-group-btn'
+                      @click='addGroupBtn'
+                      >添加分组</el-button>
+                    </li>
+                  </ul>
+
+                </div>                
+              </div>
+            </el-col>
+          </el-row>
         </div>
-      </div>
+
+
+
       <el-dialog title="上传图片" :visible.sync="dialogImgVisible">
         <span>请选择素材分类:</span>
         <div>
@@ -195,7 +227,11 @@ export default {
       dialogVisible: false,
       group:'',
       postImgUrl:'http://192.160.0.100/api/material/uploadImg',
-      count:0
+      count:0,
+      //tag
+      tags:['标签一', '标签二', '标签三'],
+      inputVisible: false,
+      inputValue: ''
     }
   },
   created () {
@@ -214,6 +250,25 @@ export default {
     }
   } ,
   methods : { 
+    handleClose(tag) {
+        this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
+      },
+
+      showInput() {
+        this.inputVisible = true;
+        this.$nextTick(_ => {
+          this.$refs.saveTagInput.$refs.input.focus();
+        });
+      },
+
+      handleInputConfirm() {
+        let inputValue = this.inputValue;
+        if (inputValue) {
+          this.dynamicTags.push(inputValue);
+        }
+        this.inputVisible = false;
+        this.inputValue = '';
+      },
     getGrouping(){
       materialFn.getGrouping().then(res=>{
         this.grounping = res.data.data
@@ -565,16 +620,6 @@ export default {
     border: 1px solid #E7E7EB;
     height: 1000px;
     overflow: hidden;
-  }
-  .content{
-    position: absolute;
-    left:  0;
-    width: 800px;
-  }
-  .slidebar{
-    position: absolute;
-    left: 800px;
-    width: 250px;
   }
   .slidebar .slidebar-list{
     border: 1px solid #E7E7EB;

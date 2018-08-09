@@ -52,7 +52,7 @@ export default {
       })
     },
     upArticle(){
-      this.upArticle={
+      this.upArticleData={
           column:0,//栏位，0 ui ;  1 h5
           status:1,//文章类型，0草稿，1发布，2隐藏
           hot:1,//1为hot
@@ -69,7 +69,7 @@ export default {
           coverUrl:'https://i0.hdslb.com/bfs/archive/6063fb40e90a17912b71d2cfd4ea56f69abb70de.png',//封面图片
           coverShow:1//封面是否再文章显示 0 否，1是        
       }
-      articleApi.addArticle(this.upArticle).then(res=>{
+      articleApi.addArticle(this.upArticleData).then(res=>{
         console.log(res)
       })
     }

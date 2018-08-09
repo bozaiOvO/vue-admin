@@ -58,6 +58,7 @@ function editArticle(article){
 }
 //提交文章
 function addArticle(article){
+  console.log(article)
   return request ({
     url: 'api/article/add',
     method: 'post',
