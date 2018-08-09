@@ -20,6 +20,7 @@ function delMaterialImg(id) {
     method:'get'
   })
 }
+//添加图片
 function addMaterialImg(type,id,title,author,groupId){
   return request({
     url: '/api/material/add',
@@ -33,6 +34,8 @@ function addMaterialImg(type,id,title,author,groupId){
     }
   })
 }
+//更改图片名字
+// function
 //获取所有分组
 function getGrouping(obj) {
   return request({

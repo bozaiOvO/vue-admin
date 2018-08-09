@@ -17,13 +17,13 @@
       type="selection"
       width="50">
     </el-table-column>
-    <el-table-column
+    <!-- <el-table-column
       fixed
       prop="id"
       label="id"
       width="70"
       >
-    </el-table-column>
+    </el-table-column> -->
     <el-table-column
       prop="title"
       label="title"
@@ -73,7 +73,7 @@
   </div>
 </template>
 <script>
-import { fetchList } from '@/api/article'
+import articleApi from '@/api/article'
 export default {
    methods: {
       handleClick(row) {
@@ -90,15 +90,18 @@ export default {
       },
       handleSelectionChange(val) {
         this.multipleSelection = val;
+      },
+      getAllArticleList(){
+        articleApi.getAllArticleList().then(res=>{
+          console.log(res)
+          if(res.data.data.list.length>0){
+            this.articleList = res.data.data.list 
+          }
+        })
       }
     },
     created(){
-      let that = this
-      fetchList().then(res=>{
-        console.log(res)
-        that.articleList = res.data.items
-        console.log(that.articleList)
-      })
+      this.getAllArticleList()//获取文章列表
     },
     data() {
       return {

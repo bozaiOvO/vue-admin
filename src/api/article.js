@@ -39,3 +39,35 @@ export function updateArticle(data) {
     data
   })
 }
+//这里是获取文章列表
+function getAllArticleList(){
+  return request ({
+    url: '/api/article/list',
+    method:'get'
+  })
+}
+//编辑文章
+function editArticle(article){
+  return request ({
+    url: 'api/article/edit',
+    method: 'post',
+    data:{
+      article
+    }
+  })
+}
+//提交文章
+function addArticle(article){
+  return request ({
+    url: 'api/article/add',
+    method: 'post',
+    data:{
+      article
+    }
+  }) 
+}
+export default {
+  getAllArticleList,
+  editArticle,
+  addArticle
+}

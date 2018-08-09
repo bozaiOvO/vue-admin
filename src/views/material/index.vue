@@ -25,6 +25,7 @@
               >添加分组</el-button>
             </li>
           </ul>
+
         </div>
         <div class="content">
           <header>
@@ -48,7 +49,7 @@
                class="checkbox">全选</el-checkbox>
                <!-- 这里是全选 -->
               <el-button type="primary" :disabled='checkedCities.length<=0' @click='appearChangeGroup'>移动分组</el-button>
-              <el-button type="primary" :disabled='checkedCities.length<=0' @click='removeMaterial'>删除素材</el-button>              
+              <el-button type="primary" :disabled='checkedCities.length<=0' @click='removeMaterial(checkedCities)'>删除素材</el-button>              
             </div>
             <ul class="img-list">
               <li v-for="item of imgList" :key='item.id' >
@@ -67,7 +68,7 @@
                 <div class="option">
                   <i class="el-icon-edit font-icon" @click="changeImgName"></i>
                   <i class="el-icon-picture font-icon" @click="oneChangeGroup(item.id)"></i>
-                  <i class="el-icon-delete font-icon" @click="removeImg(item.id)"></i>
+                  <i class="el-icon-delete font-icon" @click="removeMaterial(item.id)"></i>
                 </div>
               </li>
             </ul>
@@ -120,7 +121,7 @@
             :on-remove='upImgRemove'
             :onSuccess="uploadSuccess"
             :on-preview="handlePictureCardPreview"
-
+            :limit=5
             >
             <i class="el-icon-plus"></i>
           </el-upload>
@@ -132,24 +133,13 @@
         <div class="details">
           <div v-for='(val,index) in count'>
             <span>素材名称：</span>
-            <el-input v-model='UpMaterialForm.title[index]' auto-complete="off"></el-input>
+            <el-input v-model='UpMaterialForm.title[index]' auto-complete="off" required></el-input>
           </div>
             <span>作者：</span>
             <el-input v-model="UpMaterialForm.author" auto-complete="off"></el-input>
-            <span>选择分组：</span>
-            <el-select v-model="UpMaterialForm.groupId" placeholder="请选择分组">
-              <el-option 
-              v-for='item of grounping' 
-              :label="item.groupName" 
-              :value="item.id"
-              :key = 'item.id'
-              ></el-option>
-            </el-select>
-            <br>
-
             <br>
              <el-button type="primary" 
-             @click=addMaterialImg(UpMaterialForm.type,UpMaterialForm.id,UpMaterialForm.title,UpMaterialForm.author,UpMaterialForm.groupId)>
+             @click=addMaterialImg(UpMaterialForm.type,UpMaterialForm.id,UpMaterialForm.title,UpMaterialForm.author,currentGroup.id)>
            确 定</el-button>
         </div>  
       </el-dialog>
@@ -195,7 +185,6 @@ export default {
           id:[],//上传图片成功后返回的ID
           title:[],//素材名字
           author:'未命名',//作者名字
-          groupId:'',//这里是给上传的图片分组ID
           dialogImageUrl: ''//上传图片成功返回的url
       },
       changeImgGroupId:'-1',//给单个的img更改分组名字
@@ -213,6 +202,17 @@ export default {
     this.getGrouping()
     this.getMaterialList()//获取图片
   },
+  watch:{
+    //在这里 如果监听到上传Img的弹窗被关闭而且上传了图片，但是
+    dialogImgVisible(){
+      if(this.dialogImgVisible==false){
+        if(this.UpMaterialForm.id.length>0){
+          this.removeImg(this.UpMaterialForm.id)   
+        }
+          this.clearForm()    
+      }
+    }
+  } ,
   methods : { 
     getGrouping(){
       materialFn.getGrouping().then(res=>{
@@ -340,39 +340,44 @@ export default {
     },
     //删除图片
     removeImg(id){
-         this.$confirm('此操作将永久删除该图片, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          materialFn.delMaterialImg(id).then(res=>{
-            if(res.data.code=='success'){
-              this.getMaterialList(this.currentGroup.id,this.currentPage)
-            }else{
-              this.$message.error('失败了');  
-            }
-          })      
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });
-        });
+        materialFn.delMaterialImg(id).then(res=>{
+          if(res.data.code=='success'){
+            this.getMaterialList(this.currentGroup.id,this.currentPage)
+          }else{
+            this.$message.error('失败了');  
+          }
+        })
     },
     // 更改当前分组 分组列表的激活样式以及重新请求刷新图片列表
     changeIndex(index){
       this.currIndex = index
       this.checkAll = false
       this.currentGroup=this.grounping[this.currIndex]
-      this.getMaterialList(this.currentGroup.id)
+      this.currentPage = 1
+      this.getMaterialList(this.currentGroup.id,1)
+      this.clearCheckbox()
       // 发送请求。
     },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
     },
     //删除选择的素材 在这里显示的是500
-    removeMaterial(){
-      this.removeImg(this.checkedCities,function(){return})
+    removeMaterial(id){
+      console.log('111111111111111111111111')
+      console.log(id)
+         this.$confirm('此操作将永久删除该图片, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          console.log(id)
+          this.removeImg(id)
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });
+        });
     },
     //出现移动分组
     appearChangeGroup(){
@@ -390,6 +395,7 @@ export default {
             message: '移动成功'
           });          
           this.getMaterialList(this.currentGroup.id,this.currentPage)
+          this.clearCheckbox()
         }else{
           this.$message.error('失败了');    
         }
@@ -406,7 +412,9 @@ export default {
     // 改变当前页 发送请求
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);  
-       this.getMaterialList(this.currentGroup.id,this.currentPage)
+      this.currentPage = val
+       this.getMaterialList(this.currentGroup.id,val)
+       this.clearCheckbox()
     },
     // changeImgName更改图片名字 没写没借口
     changeImgName(){
@@ -448,7 +456,6 @@ export default {
           index=i
         }
       }
-      // let that = this
       materialFn.delMaterialImg(id).then(res=>{
         console.log(res)
         if(res.data.code=='success'){
@@ -462,9 +469,8 @@ export default {
     },
     //上传图片的确定按钮按下。
     addMaterialImg(type,id,title,author,groupId){
-      //&符号有毛病！
-      if(type==''&&title.length<=0&&title.length!=id.length){
-         this.$message.error('上传错误，请反省自己');   
+      if(type==''||title.length<=0||title.length!=id.length){
+         this.$message.error('上传错误，图片名称需要和图片数量对应哦~');   
          return
       }else{
         materialFn.addMaterialImg(type,id,title,author,groupId).then(res=>{
@@ -474,20 +480,27 @@ export default {
                 message: '上传成功',
                 type: 'success'
               });
-              this.dialogImgVisible=false
-              this.UpMaterialForm.type=''
-              this.UpMaterialForm.id=[]
-              this.UpMaterialForm.title.length=0
-              this.UpMaterialForm.author=''
-              this.UpMaterialForm.groupId=''
-              this.$refs.upload.clearFiles();
-              this.count = 0;
-              this.getMaterialList(this.currentGroup.id,this.currentPage)
+              this.getMaterialList(groupId)
+              this.clearForm()
           }else{
                this.$message.error('上传错误，请反省自己');        
           }
         })
       }
+    },
+    //清除选中
+    clearCheckbox(){
+      this.checkedCities.length =0
+    },
+    //清除form
+    clearForm(){
+      this.UpMaterialForm.type=''
+      this.UpMaterialForm.id=[]
+      this.UpMaterialForm.title.length=0
+      this.UpMaterialForm.author='未命名'
+      this.$refs.upload.clearFiles();
+      this.count = 0;
+      this.dialogImgVisible=false
     },
     handlePictureCardPreview(file) {
       console.log(file)
@@ -499,21 +512,18 @@ export default {
       if(this.UpMaterialForm.materialType==''){
         return false
       }
-        const isJPG = file.type === 'image/jpeg'||'png'||'gif'||'psd';
+        const isJPG = file.type === 'image/jpeg';
+        const isGIF = file.type === 'image/gif';
+        const isPNG = file.type === 'image/png';
+        const isBMP = file.type === 'image/bmp';
+        const isPSD = file.type === 'image/psd';
         const isLt3M = file.size / 1024 / 1024 < 3;
-        if (!isJPG) {
+        if(!/image\/(jpeg|gif|png|bmp|psd)/.test(file.type)){
           this.$message.error('请不要上传奇奇怪怪的东西哟!');
         }
-        if(!isLt3M) {
-           this.$message.error('给图片减减肥吧!');
-        }
-        return isJPG &&isLt3M
     },
     uploadError(){
       this.$message.error('上传错误，请反省自己或者检查网络');  
-    },
-    handleRemove(){
-      //这里文件列表移除的钩子（file，fileList）
     },
     //这里是全选相关
   handleCheckAllChange(val) {
