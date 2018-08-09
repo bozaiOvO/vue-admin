@@ -58,7 +58,8 @@
       width="250">
       <template slot-scope="scope">
         <el-button @click="handleClick(scope.row)" type="primary" size="small">查看</el-button>
-        <el-button size="small"   type="warning">编辑</el-button>
+        <router-link :to="{name:'article.edit'}"> <el-button size="small"   type="warning">编辑</el-button>
+        </router-link>
         <el-button size="small"   type="danger">删除</el-button>
       </template>
     </el-table-column>
@@ -68,41 +69,41 @@
 <script>
 import articleApi from '@/api/article'
 export default {
-   methods: {
-      handleClick(row) {
-        console.log(row);
-      },
-      toggleSelection(rows) {
-        if (rows) {
-          rows.forEach(row => {
-            this.$refs.multipleTable.toggleRowSelection(row);
-          });
-        } else {
-          this.$refs.multipleTable.clearSelection();
-        }
-      },
-      handleSelectionChange(val) {
-        this.multipleSelection = val;
-      },
-      getAllArticleList(){
-        articleApi.getAllArticleList().then(res=>{
-          console.log(res)
-          if(res.data.data.list.length>0){
-            this.articleList = res.data.data.list 
-          }
+  methods: {
+    handleClick(row) {
+      console.log(row)
+    },
+    toggleSelection(rows) {
+      if (rows) {
+        rows.forEach(row => {
+          this.$refs.multipleTable.toggleRowSelection(row)
         })
+      } else {
+        this.$refs.multipleTable.clearSelection()
       }
     },
-    created(){
-      this.getAllArticleList()//获取文章列表
+    handleSelectionChange(val) {
+      this.multipleSelection = val
     },
-    data() {
-      return {
-        articleList:[],
-        multipleSelection: []
-      }
+    getAllArticleList() {
+      articleApi.getAllArticleList().then(res => {
+        console.log(res)
+        if (res.data.data.list.length > 0) {
+          this.articleList = res.data.data.list
+        }
+      })
     }
-};
+  },
+  created() {
+    this.getAllArticleList()// 获取文章列表
+  },
+  data() {
+    return {
+      articleList: [],
+      multipleSelection: []
+    }
+  }
+}
 </script>
 <style scoped>
 .header{
