@@ -18,6 +18,7 @@
       width="50">
     </el-table-column>
     <el-table-column
+      fixed
       prop="title"
       label="title"
       show-overflow-tooltip
@@ -29,8 +30,19 @@
       width="120">
     </el-table-column>
     <el-table-column
+     show-overflow-tooltip
+      prop="是"
+      label="原创"
+      width="100">
+    </el-table-column>
+    <el-table-column
       prop="addTime"
-      label="时间"
+      label="上传时间||更新时间"
+      width="170">
+    </el-table-column>
+    <el-table-column
+      prop="addTime"
+      label="精品"
       width="170">
     </el-table-column>
     <el-table-column
@@ -38,12 +50,6 @@
       prop="content_short"
       label="内容"
       width="220">
-    </el-table-column>
-        <el-table-column
-     show-overflow-tooltip
-      prop="是"
-      label="原创"
-      width="100">
     </el-table-column>
     <el-table-column
       label="封面"

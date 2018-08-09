@@ -418,7 +418,6 @@ export default {
     },
     //删除选择的素材 在这里显示的是500
     removeMaterial(id){
-      console.log('111111111111111111111111')
       console.log(id)
          this.$confirm('此操作将永久删除该图片, 是否继续?', '提示', {
           confirmButtonText: '确定',

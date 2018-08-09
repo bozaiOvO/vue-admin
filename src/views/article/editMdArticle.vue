@@ -57,8 +57,8 @@ export default {
           status:1,//文章类型，0草稿，1发布，2隐藏
           hot:1,//1为hot
           jing:1,//0 正常； 1 精品推荐
-          author:'Li',//
-          title:'zhan',//
+          author:'iLiLLI',//
+          title:'内容源码，html或者markdown内容源码，html或者markdown编辑器类型，0富文本，1md',//
           desc:null,//
           type:1,//来源：0 引用，1 原创，2 微信公众号
           sourceName:'null',//原文网站名称
