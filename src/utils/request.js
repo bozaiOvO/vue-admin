@@ -68,11 +68,13 @@ service.interceptors.response.use(
     })
     return Promise.reject(error)
   })
-function http(data){
-  if(data.method.toLowerCase() === 'post'){
-    data.data = qs.stringify(data.data,{arrayFormat: 'repeat'});
+function http(config){
+  if(config.method.toLowerCase() === 'post'){
+    config.data = qs.stringify(config.data,{arrayFormat: 'repeat',allowDots: true,allowDots: true});
+  }else{
+    config.params = config.data;
   }
-  return service(data);
+  return service(config);
 }
 
 export default http;

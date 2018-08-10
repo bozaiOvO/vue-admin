@@ -269,3 +269,22 @@ export function deepClone(source) {
 export function uniqueArr(arr) {
   return Array.from(new Set(arr))
 }
+
+export function resetObj(obj,attrs){
+  for(var key in obj){
+    if(typeof obj[key] === 'string'){
+      obj[key] = '';
+    }else if(typeof obj[key] === 'number'){
+      obj[key] = 0;
+    }else if(typeof obj[key] === 'boolean'){
+      obj[key] = false;
+    }else if(typeof obj[key] === 'object'){
+      if(obj[key] instanceof Array){
+        obj[key] = [];
+      }else{
+        obj[key] = {};
+      }
+    }
+  }
+  Object.assign(obj,attrs||{});
+}

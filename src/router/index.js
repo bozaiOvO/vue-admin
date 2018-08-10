@@ -93,7 +93,8 @@ export const asyncRouterMap = [
     },
     children: [
       { path: 'adminUser', component: () => import('@/views/sys/admin-user/index'), name: 'adminUser', meta: { title: '用户列表' }},
-      { path: 'menu', component: () => import('@/views/sys/menu/index'), name: 'menuList', meta: { title: '菜单管理' }}
+      { path: 'menu', component: () => import('@/views/sys/menu/index'), name: 'menuList', meta: { title: '菜单管理' }},
+      { path: 'role', component: () => import('@/views/sys/role/index'), name: 'roleList', meta: { title: '角色管理' }}
 
     ]
   },
