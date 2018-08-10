@@ -75,11 +75,11 @@
                         <el-pagination
                           @size-change="handleSizeChange"
                           @current-change="handleCurrentChange"
-                          :current-page.sync="currentPage"
-                          :page-size="12"
+                          :current-page.sync="page.currentPage"
+                          :page-size="page.pageSize"
                           background
                           layout="prev, pager, next, jumper"
-                          :total="1000">
+                          :total="page.totalRow">
                           <span class="demonstration">直接前往</span>
                         </el-pagination>
                       </div>
@@ -200,7 +200,11 @@ export default {
   data(){
     return {
       imgList:[],
-      currentPage:1,
+      page:{
+        currentPage:1,
+        pageSize:10,
+        totalRow:10,
+      },
       grounping:[],
       currIndex:0,
       currentGroup:{
@@ -286,6 +290,8 @@ export default {
         console.log(res)
         if(res.status=200){
           this.imgList=res.data.data.list
+          this.page.pageSize = res.data.data.pageSize
+          this.page.totalRow = res.data.data.totalRow         
         }
       })
     },
@@ -397,7 +403,7 @@ export default {
     removeImg(id){
         materialFn.delMaterialImg(id).then(res=>{
           if(res.data.code=='success'){
-            this.getMaterialList(this.currentGroup.id,this.currentPage)
+            this.getMaterialList(this.currentGroup.id,this.page.currentPage)
           }else{
             this.$message.error('失败了');  
           }
@@ -408,7 +414,7 @@ export default {
       this.currIndex = index
       this.checkAll = false
       this.currentGroup=this.grounping[this.currIndex]
-      this.currentPage = 1
+      this.page.currentPage = 1
       this.getMaterialList(this.currentGroup.id,1)
       this.clearCheckbox()
       // 发送请求。
@@ -448,7 +454,7 @@ export default {
             type: 'success',
             message: '移动成功'
           });          
-          this.getMaterialList(this.currentGroup.id,this.currentPage)
+          this.getMaterialList(this.currentGroup.id,this.page.currentPage)
           this.clearCheckbox()
         }else{
           this.$message.error('失败了');    
@@ -466,7 +472,7 @@ export default {
     // 改变当前页 发送请求
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);  
-      this.currentPage = val
+      this.page.currentPage = val
        this.getMaterialList(this.currentGroup.id,val)
        this.clearCheckbox()
     },

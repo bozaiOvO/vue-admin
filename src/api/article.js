@@ -40,10 +40,27 @@ export function updateArticle(data) {
   })
 }
 //这里是获取文章列表
-function getAllArticleList(){
+function getArticleList(pageNumber=''){
   return request ({
-    url: '/api/article/list',
+    url: '/api/article/list?pageNumber='+pageNumber,
     method:'get'
+  })
+}
+//查看文章
+function preview(id){
+  return request({
+    url:'/api/article/detail?id='+id,
+    method:'get'
+  })
+}
+//删除文章
+function deleteArticle(id){
+  return request({
+    url:'/api/article/del',
+    method:'post',
+    data:{
+      id
+    }
   })
 }
 //编辑文章
@@ -68,7 +85,9 @@ function addArticle(article){
   }) 
 }
 export default {
-  getAllArticleList,
+  getArticleList,
+  preview,
   editArticle,
-  addArticle
+  addArticle,
+  deleteArticle
 }
