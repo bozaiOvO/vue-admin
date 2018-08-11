@@ -7,6 +7,14 @@ function userList(data) {
     data
   })
 }
+
+function addUser(data){
+  return request({
+    url: '/api/adminUser/add',
+    method: 'post',
+    data
+  })
+}
 function menuList(data) {
   return request({
     url: '/api/menu/list',

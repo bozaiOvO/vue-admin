@@ -115,7 +115,7 @@
 			:close-on-press-escape="false"
 			closed="closeDialog">
 		  <el-form :model="adminUser" label-width="80px">
-		    <el-form-item label="账号">
+		    <el-form-item label="账号" prop="username">
 		      <el-input  v-model="adminUser.username"   auto-complete="off"></el-input>
 		    </el-form-item>
 		    <el-form-item label="职位">
@@ -125,7 +125,7 @@
 		      </el-select>
 		    </el-form-item>
 		
-		  <el-form-item label="描述" >
+		  <el-form-item label="描述" prop="desc">
 		      <el-input v-model="adminUser.desc" type="textarea"></el-input>
 		   </el-form-item>
 		   </el-form>
@@ -139,10 +139,17 @@
 </template>
 
 <script>
-	import api from '@/api/sys'
+	import userApi from '@/api/sys'
 	export default {
 	  name: 'AdminUser',
 	  data() {
+	  	var validateUsername = (rule,value,callback)=>{
+	  		if(!/\w+/i.test(rule)){
+	  			callback(new Error('字符只能是字母数字和_'));
+	  		}else{
+	  			callback();
+	  		}
+	  	}
 	    return {
 	      tableData: [],
 	      dialog1: false,
@@ -154,12 +161,20 @@
 	        job: '',
 	        empt: '',
 	        addTime: ''
+	      },
+	      rules:{
+	      	username:[{required:true,message:'用户名不能为空!',trigger:'blur'},
+	      	{min: 3, max: 12, message: '长度在 3 到 12 个字符', trigger: 'blur' },
+	      	{validator:validateUsername,trigger:'blur'}
+	      	],
+	      	desc:[{max: 200, message: '不嫩超过200个字符!', trigger: 'blur' }]
 	      }
+
 	    }
 	  },
 	  methods: {
 	    getUserList() {
-	      api.userList()
+	      userApi.userList()
 	        .then(res => {
 	          this.tableData = res.data.data.list
 	        })
@@ -180,7 +195,18 @@
 	        addTime: ''
 	      }
 	      console.log(';;;')
-	    }
+	    },
+			doSave(){
+				userApi.add(this.adminUser)
+					.then(res=>{
+						if(res.data.code == 'success' ){
+							this.$message.success('保存成功!')
+							resetObject(this.adminUser)
+							this.dialog1 = false;
+							this.getUserList();
+						}
+					})
+			}
 	  },
 	  created() {
 	    this.getUserList()
