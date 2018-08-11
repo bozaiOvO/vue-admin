@@ -32,14 +32,15 @@
 			<el-col :span="8">
 				<el-card shadow="never">
 					<div slot="header" class="clearfix">
-						<span><font class="warning">{{tempRole.roleName}}</font> 用户</span>
+						<span><font class="primary">{{tempRole.roleName}}</font> 用户</span>
 					</div>
 				</el-card>
 			</el-col>
 			<el-col :span="8">
 				<el-card shadow="never">
 					<div slot="header" class="clearfix">
-					    <span><font class="warning">{{tempRole.roleName}}</font> 权限列表</span>
+					    <span><font class="primary">{{tempRole.roleName}}</font> 权限列表</span>
+					    <el-button v-show="tempRole.id" @click="cancelQxEdit" style="color:#f56c6c;float: right; padding: 3px 0;"  type="text">取消编辑</el-button>
 				    </div>
 					<el-tree
 						ref="tree"
@@ -51,28 +52,12 @@
 					    :props="defaultProps">
 					</el-tree>
 					<div class="bottom clearfix" style="margin-top:20px;border-top:1px solid #e5e5e5;padding-top:20px;text-align:right;">
-			            <el-button>恢复</el-button>					
-						<el-button @click="saveQx" type="primary">保存</el-button>
+			            <el-button @click="resetTree">恢复</el-button>					
+						<el-button  :loading="btnLoading" @click="saveQx" type="primary">保存</el-button>
 					</div>	
 				</el-card>
 			</el-col>
 		</el-row>
-		<el-dialog title="角色"
-		  :visible.sync="dialog1"
-		  width="30%">
-			<el-form ref="form"  label-width="80px">
-				<el-form-item label="角色名称" required>
-					<el-input v-model="role.roleName"></el-input>
-				</el-form-item>
-				<el-form-item label="描述" required>
-					<el-input textarea v-model="role.desc"></el-input>
-				</el-form-item>
-			</el-form>
-			<span slot="footer" class="dialog-footer">
-			    <el-button @click="cancledialog">取 消</el-button>
-			    <el-button type="primary" @click="doAdd">确 定</el-button>
-			  </span>
-		</el-dialog>
 	</div>
 </template>
 
@@ -85,8 +70,8 @@
 		data () {
 			return {
 				roleList:[],
-				dialog1:false,
 				loading:false,
+				btnLoading:false,
 				role:{
 					id:'',
 					roleName:'',
@@ -105,7 +90,7 @@
 		        tempRole:{
 		        	id:'',
 		        	roleName:''
-		        }
+		        },
 			}
 		},
 		computed:{
@@ -156,7 +141,6 @@
 				menuApi.menuList()
 					.then(res=>{
 						this.menuList = res.data.data;
-						console.log(this.menuList);
 					})
 			},
 			showUserList(){
@@ -172,11 +156,12 @@
 						var ids = [];
 						if(res.data.data&&res.data.data.length>0){
 							res.data.data.forEach(item=>{
-								ids.push(item.id);
+								ids.push(item.menuId);
 							})
 						}
-						console.log(ids);
-						this.checkKeys = ids;
+						this.tempRole.qx = ids;
+						this.$refs.tree.setCheckedKeys(ids);
+						
 					})
 			},
 			saveQx(){
@@ -184,14 +169,29 @@
 					this.$message.error('没有选中角色!');
 					return;
 				}
+				this.btnLoading = true;
 				var keys = this.$refs.tree.getCheckedKeys();
 				roleApi.saveMenuByRole({
 					roleId:this.tempRole.id,
 					menuIds:keys
 				}).then(res=>{
-						this.$message.success(res.data.code);
+						if(res.data.code=='success'){
+							this.$message.success('保存成功!');
+						}else{
+							this.$message.error('保存失败!');
+						}
+						setTimeout(()=>{
+						   this.btnLoading = false;		
+						}, 1500);
 					})
 
+			},
+			resetTree(){
+				this.$refs.tree.setCheckedKeys(this.tempRole.qx);
+			},
+			cancelQxEdit(){
+				resetObj(this.tempRole);
+				this.$refs.tree.setCheckedKeys([]);
 			}
 		},
 		created(){
@@ -207,6 +207,9 @@
 	}
 	.warning{
 		color:#E6A23C;
+	}
+	.primary{
+		color:#409EFF;
 	}
 	
 </style>
