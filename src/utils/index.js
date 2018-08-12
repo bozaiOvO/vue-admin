@@ -288,3 +288,17 @@ export function resetObj(obj,attrs){
   }
   Object.assign(obj,attrs||{});
 }
+/**
+ * [{id:'xx'},{id:'xxx'}]==> ['xx','xxx']
+ * @param {*} obj 
+ */
+export function list2Arr(arr,key,isParseInt){
+  var rs = [];
+    for(var i = 0 ; i < arr.length ; i++){
+      rs.push(arr[i][key]);
+    }
+  if(isParseInt){
+    rs = rs.map(o=>parseInt(o))
+  }
+  return rs;
+}

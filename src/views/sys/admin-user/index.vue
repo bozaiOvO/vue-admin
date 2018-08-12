@@ -36,10 +36,11 @@
 					shadow="never">
 					<el-row>
 						<el-col :span="24">
-							<el-button type="primary" icon="el-icon-plus" @click="dialog1=true">添加</el-button>
+							<el-button type="primary" icon="el-icon-plus" @click="goAdd">添加</el-button>
 						</el-col>
 					</el-row>
 					<el-table
+						v-loading="loading"
 						border
 						:data="tableData"
 						style="margin-top:20px;">
@@ -59,14 +60,9 @@
 							fixed="left">
 						</el-table-column>
 						<el-table-column
-							prop="desc"
-							label="描述"
-							width="220">
-						</el-table-column>
-						<el-table-column
+							prop="roleName"
 							label="角色"
 							width="200">
-							<template slot-scope="scope">管理员,超级管理员</template>
 						</el-table-column>
 						<el-table-column
 							label="职位"
@@ -86,12 +82,13 @@
 						<el-table-column
 							align="center"
 							label="操作"
-							width="200">
+							width="200"
+							fixed="right">
 							<template slot-scope="scope">
 								<el-button-group>
 								  <el-button @click="goEdit(scope.row)" size="mini" type="primary">内容</el-button>
-								  <el-button size="mini" type="success">权限</el-button>
-								  <el-button size="mini" type="danger">删除</el-button>
+								  <el-button @click="goQx(scope.row)" size="mini" type="success">角色</el-button>
+								  <el-button @click="goDel(scope.row)" size="mini" type="danger">删除</el-button>
 								</el-button-group>
 							</template>
 							
@@ -114,9 +111,9 @@
 			:close-on-click-modal="false"
 			:close-on-press-escape="false"
 			closed="closeDialog">
-		  <el-form :model="adminUser" label-width="80px">
+		  <el-form ref="form" :model="adminUser" :rlues="rlues" label-width="80px">
 		    <el-form-item label="账号" prop="username">
-		      <el-input  v-model="adminUser.username"   auto-complete="off"></el-input>
+		      <el-input  v-model.trim="adminUser.username"   auto-complete="off"></el-input>
 		    </el-form-item>
 		    <el-form-item label="职位">
 		      <el-select v-model="adminUser.job"  placeholder="请选择职位">
@@ -124,24 +121,26 @@
 		        <el-option label="销售" value="beijing"></el-option>
 		      </el-select>
 		    </el-form-item>
-		
-		  <el-form-item label="描述" prop="desc">
-		      <el-input v-model="adminUser.desc" type="textarea"></el-input>
-		   </el-form-item>
 		   </el-form>
 		  <div slot="footer" class="dialog-footer">
-		    <el-button @click="dialog1 = false">取 消</el-button>
-		    <el-button type="primary" @click="dialog1 = false">确 定</el-button>
+		    <el-button @click="closeDialog">取 消</el-button>
+		    <el-button type="primary" @click="doSave">确 定</el-button>
 		  </div>
 		  	
 		</el-dialog>
+		<qx-dialog @get_user_list="getUserList" :adminUser="adminUser"  :dialog2.sync="dialog2"  :data="transferDataAll"></qx-dialog>
 	</div>
 </template>
 
 <script>
-	import userApi from '@/api/sys'
+	import {userApi,roleApi} from '@/api/sys'
+	import {resetObj} from '@/utils/index'
+	import qxDialog from './qxDialog'
 	export default {
 	  name: 'AdminUser',
+		components:{
+			qxDialog
+		},
 	  data() {
 	  	var validateUsername = (rule,value,callback)=>{
 	  		if(!/\w+/i.test(rule)){
@@ -151,65 +150,120 @@
 	  		}
 	  	}
 	    return {
+				loading: false,
 	      tableData: [],
 	      dialog1: false,
+				dialog2: false,
 	      adminUser: {
 	        id: '',
 	        username: '',
-	        desc: '',
 	        role: [],
 	        job: '',
 	        empt: '',
 	        addTime: ''
 	      },
-	      rules:{
-	      	username:[{required:true,message:'用户名不能为空!',trigger:'blur'},
-	      	{min: 3, max: 12, message: '长度在 3 到 12 个字符', trigger: 'blur' },
-	      	{validator:validateUsername,trigger:'blur'}
-	      	],
-	      	desc:[{max: 200, message: '不嫩超过200个字符!', trigger: 'blur' }]
-	      }
+	      rlues:{
+	      	username:[
+						{required:true,message:'用户名不能为空!',trigger:'blur'},
+	      		{min: 3, max: 12, message: '长度在 3 到 12 个字符', trigger: 'blur' },
+	      		{validator:validateUsername,trigger:'blur'}
+	      	]
+	      },
+				transferDataAll:[],
+				transferDataValue:[]
 
 	    }
 	  },
 	  methods: {
 	    getUserList() {
+				this.loading = true;
 	      userApi.userList()
 	        .then(res => {
 	          this.tableData = res.data.data.list
+						this.loading = false
 	        })
 	    },
+			//获取所有的角色列表
+			getRoleList(){
+				roleApi.roleList()
+					.then(res=>{
+						var roleList = res.data.data;
+						if(roleList){
+							var data = [];
+							roleList.forEach((item,index)=>{
+								data.push({
+									key:item.id,
+									label: item.roleName
+								})
+							})
+							this.transferDataAll = data;
+						}
+					})
+			},
+			goAdd(){
+				resetObj(this.adminUser);
+				this.dialog1 = true;
+			},
 	    goEdit(row) {
 	      this.adminUser = row
 	      this.dialog1 = true
-	      console.log(this.adminUser)
 	    },
+			goDel(row){
+				this.$confirm('确定删除用户'+row.username+'?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'danger'
+        }).then(() => {
+					userApi.delUser({id:row.id})
+						.then(res=>{
+							if(res.data.code == 'success'){
+								this.getUserList()
+							}else{
+								this.$message.error('删除失败!')
+							}
+						})
+
+        })
+			},
 	    closeDialog() {
-	      this.adminUser = {
-	        id: '',
-	        username: '',
-	        desc: '',
-	        role: [],
-	        job: '',
-	        empt: '',
-	        addTime: ''
-	      }
-	      console.log(';;;')
+				this.dialog1 = false
+	      resetObj(this.adminUser)
+
 	    },
 			doSave(){
-				userApi.add(this.adminUser)
-					.then(res=>{
-						if(res.data.code == 'success' ){
-							this.$message.success('保存成功!')
-							resetObject(this.adminUser)
-							this.dialog1 = false;
-							this.getUserList();
+				this.$refs.form.validate((valid) => {
+					if(valid){
+						var api ;
+						if(this.adminUser.id){
+							api = userApi.updateUser
+						}else{
+							api = userApi.addUser
 						}
-					})
+						api({adminUser:this.adminUser})
+							.then(res=>{
+								if(res.data.code == 'success' ){
+									resetObj(this.adminUser)
+									this.dialog1 = false;
+									this.getUserList();
+								}else{
+									this.$message.error('保存失败!')
+								}
+							})
+					}else{
+						this.$message.error('表单验证失败!')
+						return false
+					}
+				})
+				
+			},
+			goQx(row){
+				this.dialog2 = true;
+				this.adminUser = row;
 			}
 	  },
 	  created() {
 	    this.getUserList()
+			this.getRoleList()
 	}
 	}
 </script>

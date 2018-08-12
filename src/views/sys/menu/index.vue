@@ -70,8 +70,6 @@
 		  title="提示"
 		  :visible.sync="dialog1"
 		  width="30%">
-		  <p>id==>{{menu.id}}</p>
-		  <p>pid==>{{menu.pId}}</p>
 		  <el-form ref="form" :model="menu" :rules="rules" label-width="80px">
 		  	<el-form-item label="菜单名称" prop="name">
 		  		<el-input v-model="menu.name"></el-input>

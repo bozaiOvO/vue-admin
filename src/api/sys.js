@@ -1,5 +1,5 @@
-import request from '@/utils/request'
-
+import request from './request'
+// user===
 function userList(data) {
   return request({
     url: '/api/adminUser/list',
@@ -15,6 +15,43 @@ function addUser(data){
     data
   })
 }
+
+function updateUser(data){
+  return request({
+    url: '/api/adminUser/update',
+    method: 'post',
+    data
+  })
+}
+
+function delUser(data){
+  return request({
+    url: '/api/adminUser/del',
+    method: 'get',
+    data
+  })
+}
+
+function saveUserRole(data){
+  return request({
+    url: '/api/adminUser/saveUserRole',
+    method: 'post',
+    data
+  })
+}
+/**
+ * 根据用户获取角色
+ */
+function getRoleByUser(data){
+  return request({
+    url: '/api/adminUser/getRoleByUser',
+    method: 'get',
+    data
+  })
+}
+
+
+// menu==
 function menuList(data) {
   return request({
     url: '/api/menu/list',
@@ -29,7 +66,7 @@ function addMenu(data){
     data
   })
 }
-
+// roel==
 function roleList(data){
   return request({
     url:'/api/role/list',
@@ -56,7 +93,12 @@ function saveMenuByRole(data){
 
 
 export var userApi = {
-  userList
+  userList,
+  addUser,
+  updateUser,
+  delUser,
+  getRoleByUser,
+  saveUserRole
 }
 export var menuApi = {
   menuList,
