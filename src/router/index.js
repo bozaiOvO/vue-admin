@@ -65,6 +65,7 @@ export const constantRouterMap = [
   {
     path: '/content',
     component: Layout,
+    hidden: true,
     children: [{
       path: 'article/edit',
       component: () => import('@/views/article/editMdArticle'),
@@ -82,7 +83,21 @@ export default new Router({
 
 export const asyncRouterMap = [
 
-// 这个是文章相关
+  {
+    path: '/sys',
+    component: Layout,
+    name: 'sys',
+    meta: {
+      title: '权限设置',
+      icon: 'setting'
+    },
+    children: [
+      { path: 'adminUser', component: () => import('@/views/sys/admin-user/index'), name: 'adminUser', meta: { title: '用户列表' }},
+      { path: 'menu', component: () => import('@/views/sys/menu/index'), name: 'menuList', meta: { title: '菜单管理' }}
+
+    ]
+  },
+  // 这个是文章相关
   {
     path: '/content',
     component: Layout,

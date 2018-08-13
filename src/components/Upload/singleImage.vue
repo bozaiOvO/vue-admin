@@ -23,7 +23,7 @@ import { getToken } from '@/api/qiniu'
 export default {
   name: 'singleImageUpload',
   props: {
-    value: String
+    value: String,
   },
   computed: {
     imageUrl() {

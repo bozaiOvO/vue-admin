@@ -20,6 +20,9 @@ function hasPermission(roles, route) {
  */
 function filterAsyncRouter(asyncRouterMap, roles) {
   const accessedRouters = asyncRouterMap.filter(route => {
+    if (route.hidden) {
+      return false
+    }
     if (hasPermission(roles, route)) {
       if (route.children && route.children.length) {
         route.children = filterAsyncRouter(route.children, roles)
@@ -39,7 +42,10 @@ const permission = {
   mutations: {
     SET_ROUTERS: (state, routers) => {
       state.addRouters = routers
-      state.routers = constantRouterMap.concat(routers)
+      var map = constantRouterMap.filter(route => {
+        return !route.hidden
+      })
+      state.routers = map.concat(routers)
     }
   },
   actions: {
