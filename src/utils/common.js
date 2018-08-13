@@ -14,7 +14,7 @@ function confirmFn(msg,fn){
     }).catch(() => {
       that.$message({
         type: 'info',
-        message: '已取消删除'
+        message: '已取消'
       });          
     });
 }

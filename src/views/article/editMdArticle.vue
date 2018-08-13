@@ -50,8 +50,13 @@
         <el-form-item label="原文连接" v-show="form.type==0?true:false">
           <el-input v-model="form.sourceUrl" style='width:300px'></el-input>
         </el-form-item>
-        <el-button type="primary" style="margin-left: 100px;margin-bottom: 10px">从素材图片中选择作品封面</el-button>
-        <pop-up></pop-up>
+        <el-button 
+        type="primary" 
+        style="margin-left: 100px;margin-bottom: 10px"
+        @click='ispopUpShow=true'
+        >从素材图片中选择作品封面
+        </el-button>
+        <pop-up @coverImgUrl='coverImgUrl' @ispopUpShow='ispopUpShow=false' :ispopUpShow='ispopUpShow'></pop-up>
         <el-form-item label="封面图片URL">
           <el-input v-model="form.coverUrl" style='width:300px'></el-input>
           <el-radio-group v-model="form.coverShow" >
@@ -117,6 +122,7 @@ export default {
         isJing:true,
         isHot:true,
         isSubmit:true,//这个是提交按钮，必须先转意在提交。
+        ispopUpShow:false,//这个是弹窗选择封面图片
         rules: {
           title: [
             { required: true, message: '请输入名称', trigger: 'blur' },
@@ -141,7 +147,8 @@ export default {
   methods: {
     //如果路由带有Id的参数，则初始化编辑.
     initialization(){
-         articleApi.preview(this.$route.query.id).then(res=>{
+         articleApi.preview({id:this.$route.query.id}).then(res=>{
+          console.log(res)
           this.form = res.data.data
         })     
     },
@@ -155,6 +162,9 @@ export default {
     changeSwitch(value){
       this.form.jing = this.isJing==true?'1':'0'
       this.form.hot = this.isHot==true?'1':'0'
+    },
+    coverImgUrl(url){
+      this.form.coverUrl = url
     },
     upArticle(form){
        this.$refs.form.validate((valid) => {

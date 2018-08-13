@@ -269,3 +269,36 @@ export function deepClone(source) {
 export function uniqueArr(arr) {
   return Array.from(new Set(arr))
 }
+
+export function resetObj(obj,attrs){
+  for(var key in obj){
+    if(typeof obj[key] === 'string'){
+      obj[key] = '';
+    }else if(typeof obj[key] === 'number'){
+      obj[key] = 0;
+    }else if(typeof obj[key] === 'boolean'){
+      obj[key] = false;
+    }else if(typeof obj[key] === 'object'){
+      if(obj[key] instanceof Array){
+        obj[key] = [];
+      }else{
+        obj[key] = {};
+      }
+    }
+  }
+  Object.assign(obj,attrs||{});
+}
+/**
+ * [{id:'xx'},{id:'xxx'}]==> ['xx','xxx']
+ * @param {*} obj 
+ */
+export function list2Arr(arr,key,isParseInt){
+  var rs = [];
+    for(var i = 0 ; i < arr.length ; i++){
+      rs.push(arr[i][key]);
+    }
+  if(isParseInt){
+    rs = rs.map(o=>parseInt(o))
+  }
+  return rs;
+}

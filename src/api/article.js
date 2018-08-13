@@ -1,10 +1,11 @@
-import request from '@/utils/request'
+import request from '@/api/request'
 
 //这里是获取文章列表
-function getArticleList(pageNumber=''){
+function getArticleList(data){
   return request ({
-    url: '/api/article/list?pageNumber='+pageNumber,
-    method:'get'
+    url: '/api/article/list',
+    method:'get',
+    data
   })
 }
 //查看文章

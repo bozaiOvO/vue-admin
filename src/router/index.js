@@ -52,17 +52,6 @@ export const constantRouterMap = [
     }]
   },
   {
-    path: '/guide',
-    component: Layout,
-    redirect: '/guide/index',
-    children: [{
-      path: 'index',
-      component: () => import('@/views/guide/index'),
-      name: 'guide',
-      meta: { title: 'guide', icon: 'guide', noCache: true }
-    }]
-  },
-  {
     path: '/content',
     component: Layout,
     hidden: true,
@@ -93,7 +82,8 @@ export const asyncRouterMap = [
     },
     children: [
       { path: 'adminUser', component: () => import('@/views/sys/admin-user/index'), name: 'adminUser', meta: { title: '用户列表' }},
-      { path: 'menu', component: () => import('@/views/sys/menu/index'), name: 'menuList', meta: { title: '菜单管理' }}
+      { path: 'menu', component: () => import('@/views/sys/menu/index'), name: 'menuList', meta: { title: '菜单管理' }},
+      { path: 'role', component: () => import('@/views/sys/role/index'), name: 'roleList', meta: { title: '角色管理' }}
 
     ]
   },
@@ -225,21 +215,6 @@ export const asyncRouterMap = [
     ]
   },
 
-  {
-    path: '/example',
-    component: Layout,
-    redirect: '/example/list',
-    name: 'example',
-    meta: {
-      title: 'example',
-      icon: 'example'
-    },
-    children: [
-      { path: 'create', component: () => import('@/views/example/create'), name: 'createArticle', meta: { title: 'createArticle', icon: 'edit' }},
-      { path: 'edit/:id(\\d+)', component: () => import('@/views/example/edit'), name: 'editArticle', meta: { title: 'editArticle', noCache: true }, hidden: true },
-      { path: 'list', component: () => import('@/views/example/list'), name: 'wzlist', meta: { title: 'wzlist', icon: 'list' }}
-    ]
-  },
 
   {
     path: '/nested',

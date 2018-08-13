@@ -57,7 +57,7 @@
                         <p class="img-name">
                           <!-- 这里是复选img -->
                           <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
-                            <el-checkbox :label='item.id'> {{item.title}}</el-checkbox>
+                            <el-checkbox :label='item.id' class=item-title> {{item.title}}</el-checkbox>
                           </el-checkbox-group>
                         </p>
                         <p class="img-date">
@@ -102,7 +102,8 @@
                      >{{item.groupName}}
                       <el-button 
                       v-show='item.id==-1?false:true'
-                      type="danger" 
+                      type="danger"
+                      class='group-remove-btn' 
                       @click.stop='removeGroup(item.id)'
                       >删除</el-button>
                    </li>
@@ -274,11 +275,12 @@ export default {
     },
     //获取素材列表
     getMaterialList(group=-1,page=1){
+      const that = this
       materialFn.getMaterialList({groupId:group,pageNumber:page}).then(res=>{
         if(res.status=200){
           this.imgList=res.data.data.list
           this.page.pageSize = res.data.data.pageSize
-          this.page.totalRow = res.data.data.totalRow         
+          this.page.totalRow = res.data.data.totalRow
         }
       })
     },
@@ -609,6 +611,12 @@ export default {
     height: 30px;
     line-height: 30px;
   }
+  .item-title{
+    width: 100%;
+    overflow: hidden;
+    text-overflow:ellipsis;
+    white-space: nowrap;
+  }
   .img-list .hover-date{
     display: none;
     position: absolute;
@@ -658,6 +666,21 @@ export default {
     height:100%;
 background: linear-gradient(#fb3 50%, #58a 0);
     background-size: 100% 2em;
+  }
+  .slidebar-list li{
+    position: relative;
+    margin-top: 10px;
+  }
+  .slidebar-list li:hover{
+     background-color: rgba(0,0,0,.4);
+  }
+  .slidebar-list li.active{
+    background-color: rgba(0,0,0,.4);
+  }
+  .group-remove-btn{
+    position: absolute;
+    right: 30px;
+    height: 30px;
   }
 </style>
 

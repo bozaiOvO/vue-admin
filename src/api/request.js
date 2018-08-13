@@ -6,7 +6,7 @@ import qs from 'qs'
 // create an axios instance
 const service = axios.create({
   baseURL: process.env.BASE_API, // api的base_url
-  timeout: 10000 // request timeout
+  timeout: 5000 // request timeout
 })
 
 // request interceptor
@@ -68,15 +68,6 @@ service.interceptors.response.use(
     })
     return Promise.reject(error)
   })
-// <<<<<<< HEAD
-// function http(data){
-//   if(data.method.toLowerCase() === 'post'){
-//     data.data = qs.stringify(data.data,{arrayFormat: 'repeat', allowDots: true });
-//   }
-//   return service(data);
-// }
-// =======
-// >>>>>>> 63d57fd491c11a569fbb55c61ef145123ada50f0
 function http(config){
   if(config.method.toLowerCase() === 'post'){
     config.data = qs.stringify(config.data,{arrayFormat: 'repeat',allowDots: true,allowDots: true});
@@ -85,5 +76,6 @@ function http(config){
   }
   return service(config);
 }
+
 export default http;
 // export default service

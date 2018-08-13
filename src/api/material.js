@@ -1,4 +1,4 @@
-import request from '@/utils/request'
+import request from '@/api/request'
 import qs from 'qs'
 
 //获取所有的图片

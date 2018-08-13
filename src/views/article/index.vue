@@ -101,7 +101,7 @@ export default {
     Page
   },
   created() {
-    this.getArticleList(this.page.currentPage)// 获取文章列表
+    this.getArticleList({page:this.page.currentPage})// 获取文章列表
   },
   data() {
     return {
@@ -132,7 +132,7 @@ export default {
       this.multipleSelection = val
     },
     getArticleList(page) {
-      articleApi.getArticleList(page).then(res => {
+      articleApi.getArticleList({page:page}).then(res => {
         console.log(res)
         if (res.status ==200) {
           this.articleList = res.data.data.list
@@ -168,7 +168,7 @@ export default {
       common.confirmFn.call(this,'确认删除吗？',function(){
         articleApi.deleteArticle({id:id}).then(res=>{
           if(res.data.code==true){
-            that.getArticleList(that.currentPage)
+            that.getArticleList({page:that.currentPage})
             common.message.call(that,'success','删除成功')      
           }
         })      
@@ -190,7 +190,7 @@ export default {
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);  
       this.page.currentPage = val
-      this.getArticleList(val)
+      this.getArticleList({page:val})
     },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`);
