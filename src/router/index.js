@@ -97,8 +97,8 @@ export const asyncRouterMap = [
       icon: 'excel'
     },
     children: [
-      { path: 'article', component: () => import('@/views/article/index'), name: 'articleList', meta: { title: '文章管理' }},
-      { path: 'material', component: () => import('@/views/material/index'), name: 'materialList', meta: { title: '素材管理' }}
+      { path: 'article', component: () => import('@/views/content/article/index'), name: 'articleList', meta: { title: '文章管理' }},
+      { path: 'material', component: () => import('@/views/content/material/index'), name: 'materialList', meta: { title: '素材管理' }}
 
     ]
   },

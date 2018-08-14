@@ -59,10 +59,27 @@ function menuList(data) {
     data
   })
 }
-function addMenu(data){
+
+function saveMenu(data){
   return request({
-    url: '/api/menu/add',
+    url: '/api/menu/save',
     method: 'post',
+    data
+  })
+}
+
+function updateMenu(data){
+  return request({
+    url: '/api/menu/update',
+    method: 'post',
+    data
+  })
+}
+
+function delMenu(data){
+  return request({
+    url: '/api/menu/del',
+    method: 'get',
     data
   })
 }
@@ -102,16 +119,12 @@ export var userApi = {
 }
 export var menuApi = {
   menuList,
-  addMenu
+  saveMenu,
+  updateMenu,
+  delMenu
 } 
 export var roleApi = {
   roleList,
   getMenuByRole,
   saveMenuByRole
-}
-
-export default{
-  userList,
-  menuList,
-  addMenu
 }

@@ -10,11 +10,11 @@
             @close="closeDialog"
             append-to-body>
             <el-transfer
-                :loading = "loading"
+                v-loading = "loading"
                 style="display: flex;justify-content:center;align-items:center"
                 :titles="['所有角色','拥有角色']"
                 v-model="value" 
-                :data="data"></el-transfer>
+                :data="allData"></el-transfer>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="closeDialog">取 消</el-button>
                 <el-button type="primary" @click="doSave">确 定</el-button>
@@ -30,6 +30,7 @@
         name: 'qxDialog',
         data () {
             return {
+                allData:[],
                 value:[],
                 loading: false
             }
@@ -59,6 +60,7 @@
                 this.loading = true;
                 userApi.getRoleByUser({userId:this.adminUser.id})
 						.then(res=>{
+                            this.allData = this.data;
 							this.value = list2Arr(res.data.data,'roleId');
                             this.loading = false;
 						})
@@ -67,6 +69,8 @@
         },
         watch:{
                 'dialog2'(nv,ov){
+                    this.allData = [];
+                    this.value=[];
                     //显示 而且需要获取数据
                     if(nv||this.adminUser.id){
                         this.getUserRole()

@@ -6,7 +6,7 @@ import qs from 'qs'
 // create an axios instance
 const service = axios.create({
   baseURL: process.env.BASE_API, // api的base_url
-  timeout: 5000 // request timeout
+  timeout: 8000 // request timeout
 })
 
 // request interceptor
@@ -64,7 +64,7 @@ service.interceptors.response.use(
     Message({
       message: error.message,
       type: 'error',
-      duration: 5 * 1000
+      duration: 5 * 8000
     })
     return Promise.reject(error)
   })

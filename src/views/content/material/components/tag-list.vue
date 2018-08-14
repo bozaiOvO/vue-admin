@@ -1,9 +1,12 @@
 <template>
 	<div id="list">
-		  <el-checkbox-button :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox-button>
+		<div class="tag-list-main">
+			<el-checkbox-button :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox-button>		
 		  <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
 		    <el-checkbox-button v-for="item in tagList" :label="item.id" :key="item.id">{{item.name}}</el-checkbox-button>
 		  </el-checkbox-group>
+		</div>
+		  
 	</div>
 </template>
 <script>
@@ -34,5 +37,9 @@
 	}
 </script>
 <style scoped>
-	
+	.tag-list-main{
+		position: absolute;
+		left: 10px;
+		top: 10px;
+	}
 </style>

@@ -1,125 +1,128 @@
 <template>
   <div id="material">
-      <fieldset>
-        <legend>资源管理</legend>
-      </fieldset>
 
-        <div >
-          <el-row :gutter="20">
-            <el-col :span="15">
-              <div class="grid-content bg-purple">
-                <div class="content">
-                  <header>
-                    <div class="grouping">
-                      <span class="">当前分组:</span>
-                      <span>{{currentGroup.groupName}}</span>
-                      <el-button type="warning" icon="el-icon-edit" class="rename" @click="rename(currentGroup.id)">重命名</el-button>
-                      <el-button type="danger" icon="el-icon-delete" @click='removeGroup(currentGroup.id)'>删除分组</el-button>
-                      <el-button type="primary" @click='dialogImgVisible=true'>上传作品<i class="el-icon-upload el-icon--right"></i></el-button>
-                    </div>
-                  </header>
-                  <main>
-                    <div class="sub-header">
-                       <el-checkbox
-                       :indeterminate="isIndeterminate"
-                       v-model="checkAll"
-                       @change="handleCheckAllChange"
-                       class="checkbox">全选</el-checkbox>
-                       <!-- 这里是全选 -->
-                      <el-button type="primary" :disabled='checkedCities.length<=0' @click='appearChangeGroup'>移动分组</el-button>
-                      <el-button type="primary" :disabled='checkedCities.length<=0' @click='removeMaterial(checkedCities)'>删除素材</el-button>              
-                    </div>
-                    <ul class="img-list">
-                      <li v-for="item of imgList" :key='item.id' >
-                        <a class="img" href="javascript:;" :style="{'background-image':'url('+item.ossUrl+')'}"> </a>
-                        <div class="tag">
+      <el-row style="margin-top:20px;" :gutter="20">
+        
+          <el-col :span="18">
+            <el-card shadow="never">
+            <div class="grid-content bg-purple">
+              <div class="content">
+                <header>
+                  <div class="grouping">
+                    <span class="">当前分组:</span>
+                    <span>{{currentGroup.groupName}}</span>
+                    <el-button size="small" type="warning" plain icon="el-icon-edit" class="rename" @click="rename(currentGroup.id)">重命名</el-button>
+                    <el-button size="small" type="danger" plain icon="el-icon-delete" @click='removeGroup(currentGroup.id)'>删除分组</el-button>
+                    <el-button size="small" type="primary" @click='dialogImgVisible=true'>上传作品<i class="el-icon-upload el-icon--right"></i></el-button>
+                  </div>
+                </header>
+                <el-row>
+                  <div class="sub-header">
+                    <el-checkbox
+                    :indeterminate="isIndeterminate"
+                    v-model="checkAll"
+                    @change="handleCheckAllChange"
+                    class="checkbox">全选</el-checkbox>
+                    <!-- 这里是全选 -->
+                    <el-button size="small" plain type="primary" :disabled='checkedCities.length<=0' @click='appearChangeGroup'>移动分组</el-button>
+                    <el-button size="small" plain type="primary" :disabled='checkedCities.length<=0' @click='removeMaterial(checkedCities)'>删除素材</el-button>              
+                  </div>
+                </el-row>
+                <el-row class="img-list" style="margin-top:20px;" :gutter="20">
+                    <el-col style="margin-top:20px;" :span="8" v-for="item of imgList" :key='item.id' >
+                      <el-card style="position:relative;" shadow="hover" :body-style="{ padding: '0px' }">
+                          <a class="img" href="javascript:;" :style="{'background-image':'url('+item.ossUrl+')'}"></a>
+                        <div style="position:absolute;left:16px;top:16px;overflow:hidden;" class="tag">
                           <el-tag
-                            :key="tag"
-                            v-for="tag in tags"
-                            closable
-                            :disable-transitions="false"
-                            size="mini"
-                            @close="handleClose(tag)">
-                            {{tag}}
-                          </el-tag>
-                          <el-input
-                            class="input-new-tag"
-                            v-if="inputVisible"
-                            v-model="inputValue"
-                            ref="saveTagInput"
-                            size="mini"
-                            @keyup.enter.native="handleInputConfirm"
-                            @blur="handleInputConfirm"
-                          >
-                          </el-input>
-                          <el-button v-else class="button-new-tag" size="mini" @click="showInput">+ New Tag</el-button>
-                        </div>
-                        <p class="img-name">
-                          <!-- 这里是复选img -->
-                          <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
-                            <el-checkbox :label='item.id' class=item-title> {{item.title}}</el-checkbox>
-                          </el-checkbox-group>
-                        </p>
-                        <p class="img-date">
-                          <span class="hover-date">{{item.addTime}}</span>
-                          上传时间：{{item.addTime}}
-                        </p>
-                        <div class="option">
-                          <i class="el-icon-edit font-icon" @click="changeImgName"></i>
-                          <i class="el-icon-picture font-icon" @click="oneChangeGroup(item.id)"></i>
-                          <i class="el-icon-delete font-icon" @click="removeMaterial(item.id)"></i>
-                        </div>
-                      </li>
-                    </ul>
-                      <div class="block">
-                           <page :page='page' @handleCurrentChange='handleCurrentChange' @handleSizeChange='handleSizeChange'></page>
+                              :key="tag"
+                              v-for="tag in tags"
+                              closable
+                              :disable-transitions="false"
+                              size="mini">
+                              {{tag}}
+                            </el-tag>
+                        <el-input
+                          class="input-new-tag"
+                          v-if="inputVisible"
+                          v-model="inputValue"
+                          ref="saveTagInput"
+                          size="mini"
+                          @keyup.enter.native="handleInputConfirm"
+                          @blur="handleInputConfirm"
+                        >
+                        </el-input>
+                        <el-button v-else class="button-new-tag" size="mini" icon="el-icon-plus" plain @click="showInput"></el-button>
                       </div>
-                      <el-dialog title="选择分组" :visible.sync="dialogFormVisible">
-                            <el-select v-model="changeImgGroupId">
-                              <el-option
-                               v-for="item of grounping"
-                               :value=item.id
-                               :label="item.groupName"
-                               :key='item.id'>{{item.groupName}}</el-option>
-                            </el-select>
-                        <div slot="footer" class="dialog-footer">
-                          <el-button @click="dialogFormVisible = false">取 消</el-button>
-                          <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
-                        </div>
-                      </el-dialog>
-                  </main>
-                </div>                
-              </div>
-            </el-col>
-            <el-col :span="9">
+                      <p class="img-name">
+                        <!-- 这里是复选img -->
+                        <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
+                          <el-checkbox :label='item.id' class=item-title> {{item.title}}</el-checkbox>
+                        </el-checkbox-group>
+                      </p>
+                      <p class="img-date">
+                          {{item.addTime}}
+                      </p>
+                      <div class="option">
+                        <i class="el-icon-edit font-icon" @click="changeImgName"></i>
+                        <i class="el-icon-picture font-icon" @click="oneChangeGroup(item.id)"></i>
+                        <i class="el-icon-delete font-icon" @click="removeMaterial(item.id)"></i>
+                      </div> 
+                      </el-card>
+                      
+                       
+                    </el-col>
+                </el-row>
+                <el-row style="margin:20px;">
+                  <page :page='page' @handleCurrentChange='handleCurrentChange' @handleSizeChange='handleSizeChange'></page>
+                </el-row> 
+                    <el-dialog title="选择分组" :visible.sync="dialogFormVisible">
+                          <el-select v-model="changeImgGroupId">
+                            <el-option
+                            v-for="item of grounping"
+                            :value=item.id
+                            :label="item.groupName"
+                            :key='item.id'>{{item.groupName}}</el-option>
+                          </el-select>
+                      <div slot="footer" class="dialog-footer">
+                        <el-button @click="dialogFormVisible = false">取 消</el-button>
+                        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+                      </div>
+                    </el-dialog>
+              </div>                
+            </div>
+          </el-card>
+          </el-col>
+        
+        <el-col :span="6">
+          <el-card shadow="never">
               <div class="grid-content bg-purple">
-                <div class="slidebar">
-                  <ul class="slidebar-list">
-                    <li v-for="(item,index) of grounping"
-                    :key='item.id'
-                     :class="{active:currIndex===index}"
-                     @click='changeIndex(index)'
-                     >{{item.groupName}}
-                      <el-button 
-                      v-show='item.id==-1?false:true'
-                      type="danger"
-                      class='group-remove-btn' 
-                      @click.stop='removeGroup(item.id)'
-                      >删除</el-button>
-                   </li>
-                     <li class="add-group"> 
-                      <el-button 
-                      type="primary" 
-                      class='add-group-btn'
-                      @click='addGroupBtn'
-                      >添加分组</el-button>
-                    </li>
-                  </ul>
-                </div>                
-              </div>
-            </el-col>
-          </el-row>
-        </div>
+              <div class="slidebar">
+                <ul class="slidebar-list">
+                  <li v-for="(item,index) of grounping"
+                  :key='item.id'
+                  :class="{active:currIndex===index}"
+                  @click='changeIndex(index)'
+                  >{{item.groupName}}
+                    <el-button 
+                    v-show='item.id==-1?false:true'
+                    type="danger"
+                    class='group-remove-btn' 
+                    @click.stop='removeGroup(item.id)'
+                    >删除</el-button>
+                </li>
+                  <li class="add-group"> 
+                    <el-button 
+                    type="primary" 
+                    class='add-group-btn'
+                    @click='addGroupBtn'
+                    >添加分组</el-button>
+                  </li>
+                </ul>
+              </div>                
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
       <el-dialog title="上传图片" :visible.sync="dialogImgVisible">
         <span>请选择素材分类:</span>
         <div>
@@ -151,7 +154,7 @@
         </div>
         
         <div class="details">
-          <div v-for='(val,index) in count'>
+          <div v-for="(val,index) in count">
             <span>素材名称：</span>
             <el-input v-model='UpMaterialForm.title[index]' auto-complete="off" required></el-input>
           </div>

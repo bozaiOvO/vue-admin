@@ -52,9 +52,9 @@
 									<el-button
 									@click="goAdd(scope.row)" 
 									effect="dark" content="添加子菜单" placement="top"
-									v-if="scope.row.level==1" size="mini" type="primary"icon="el-icon-plus"></el-button>
-									<el-button size="mini" type="success">修改</el-button>
-									<el-button size="mini" type="danger">删除</el-button>
+									v-if="scope.row.level==1" size="mini" type="primary" icon="el-icon-plus"></el-button>
+									<el-button @click="goEdit(scope.row)" size="mini" type="success">修改</el-button>
+									<el-button @click="goDel(scope.row)" size="mini" type="danger">删除</el-button>
 								</el-button-group>
 								
 							</template>		
@@ -66,11 +66,10 @@
 
 
 		<el-dialog
-		  v-loading="loading"
 		  title="提示"
 		  :visible.sync="dialog1"
 		  width="30%">
-		  <el-form ref="form" :model="menu" :rules="rules" label-width="80px">
+		  <el-form v-loading="loading" ref="form" :model="menu" :rules="rules" label-width="80px">
 		  	<el-form-item label="菜单名称" prop="name">
 		  		<el-input v-model="menu.name"></el-input>
 		  	</el-form-item>
@@ -86,7 +85,7 @@
 		  </el-form>
 		  <span slot="footer" class="dialog-footer">
 		    <el-button @click="cancledialog">取 消</el-button>
-		    <el-button type="primary" @click="doAdd">确 定</el-button>
+		    <el-button type="primary" @click="doSave">确 定</el-button>
 		  </span>
 		</el-dialog>
 	</div>
@@ -111,7 +110,6 @@
 	      	level:'',
 	      	pId:'',
 	      	sort:''
-
 	      },
 	      rules:{
 	      	name:[{required: true, message: '请输入菜单名称', trigger: 'blur'}],
@@ -157,34 +155,62 @@
 	    	}else{
 	    		obj = {pId:row.id,level:2}
 	    	} 
-	    	resetObj(this.menu,obj);
+				resetObj(this.menu,obj);
 	    	this.dialog1 = true;
 
 	    },
-	    doAdd(){
+	    doSave(){
 	    	this.$refs.form.validate((valid) => {
 				if (valid) {
-		    		this.loading = true;
-					menuApi.addMenu({menu:this.menu})
+						this.loading = true;
+					var api;
+					//has id is update ,no is save
+					if(this.menu.id){
+						api = menuApi.updateMenu;
+					}else{
+						api = menuApi.saveMenu;
+					}
+					console.log(this.menu);
+					api({menu:this.menu})
 							.then(res=>{
-								this.dialog1 = false;
 								resetObj(this.menu);
-								this.getMenuList();
-								this.loading = false;
 								if(res.data.code="success"){
-									this.$message.success('添加成功!');
+									this.$message.success('保存成功!');
 								}else{
 									this.$message.error('保存失败!');
 								}
+								this.dialog1 = false;
+								this.getMenuList();
+								this.loading = false;
 							})
 				} else {
 					this.$message.error('表单验证失败!');
 					return false;
 				}
 			});
-	    	
-
-	    },
+	    
+			},
+			goEdit(row){
+				this.menu = row;
+				this.dialog1 = true;	
+			}	,
+			goDel(row){
+				this.$confirm('确定删除菜单:'+row.name+'?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'danger'
+        }).then(()=>{
+					menuApi.delMenu({id:row.id})
+						.then(res=>{
+							if(res.data.code=='success'){
+								this.$message.success('删除成功!')
+								this.getMenuList()
+							}else{
+								this.$message.error('删除失败!')
+							}
+						})
+				})
+			},
 	    cancledialog(){
 	    	this.$refs.form.resetFields();
 	    	resetObj(this.menu);

@@ -43,6 +43,7 @@
 						v-loading="loading"
 						border
 						:data="tableData"
+						highlight-current-row
 						style="margin-top:20px;">
 						<el-table-column
 							type="selection"
@@ -111,7 +112,7 @@
 			:close-on-click-modal="false"
 			:close-on-press-escape="false"
 			closed="closeDialog">
-		  <el-form ref="form" :model="adminUser" :rlues="rlues" label-width="80px">
+		  <el-form ref="form" :model="adminUser"  :rules="rules" label-width="80px">
 		    <el-form-item label="账号" prop="username">
 		      <el-input  v-model.trim="adminUser.username"   auto-complete="off"></el-input>
 		    </el-form-item>
@@ -162,11 +163,12 @@
 	        empt: '',
 	        addTime: ''
 	      },
-	      rlues:{
+	      rules:{
 	      	username:[
 						{required:true,message:'用户名不能为空!',trigger:'blur'},
-	      		{min: 3, max: 12, message: '长度在 3 到 12 个字符', trigger: 'blur' },
-	      		{validator:validateUsername,trigger:'blur'}
+						{pattern:/\w/,message:'只能使用字母数字和下划线'},
+	      		{min: 3, max: 12, message: '长度在 3 到 12 个字符', trigger: 'blur' }
+	      		
 	      	]
 	      },
 				transferDataAll:[],
