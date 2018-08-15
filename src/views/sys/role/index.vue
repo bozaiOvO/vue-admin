@@ -1,63 +1,120 @@
 <template>
 	<div class="role-main">
-		<el-row style="padding:20px;">
+		<el-row style="padding:20px">
+			
 			<el-col :span="24">
-				<el-card shadow="never">
-					<div slot="header" class="clearfix">
+				<el-card>
+					<div slot="head">
 						<span>角色列表</span>
 					</div>
-					<el-row :gutter="20">
-						<el-col v-for="role in roleList" :key="role.id" :span="6" class="role-block">
-								<el-card 
-									shadow="hover" 
-									:body-style="{ padding: '15px' }">
-									
-										<div slot="header" class="clearfix">
-											<span>{{role.roleName}}</span>
-											<el-button style="float: right; padding: 3px 0" type="text">明细</el-button>
-										</div>
-									
-									<el-button plain size="mini" @click="showUserList(role)">查看用户</el-button>
-									<el-button plain type="primary" size="mini" @click="showQx(role)">查看权限</el-button>
-								</el-card>
-							
-							
+					<el-row style="margin-bottom:20px;">
+						<el-col>
+							<el-button @click="goEditRoll('')" type="primary" size="small">添加角色</el-button>
 						</el-col>
-						
 					</el-row>
+					<el-table 
+						highlight-current-row
+						border
+						:data="roleList">
+						<el-table-column
+							type="index"
+							width="50">
+						</el-table-column>
+						<el-table-column
+							prop="roleName"
+							label="角色名称"
+							width="120">
+						</el-table-column>
+						<el-table-column
+							prop="desc"
+							label="角色描述"
+							width="220">
+						</el-table-column>
+						<el-table-column
+							prop="addTime"
+							label="添加时间"
+							width="120">
+						</el-table-column>
+						<el-table-column
+							prop="creator"
+							label="创建者"
+							width="120">
+						</el-table-column>
+						<el-table-column
+							prop="creator"
+							label="创建者"
+							width="120">
+						</el-table-column>
+						<el-table-column
+							prop="creator"
+							label="操作"
+							width="220">
+							<template slot-scope="scope">
+								<el-button-group>
+									<el-button @click="goEditRoll(scope.row)" size="mini" type="primary">内容</el-button>
+									<el-button @click="goEditQx(scope.row)"  size="mini" type="success">权限</el-button>
+									<el-button @click="goDel(scope.row)" size="mini" type="danger">删除</el-button>
+								</el-button-group>
+							</template>
+						</el-table-column>	
+					</el-table>
 				</el-card>
+				
 			</el-col>
+			
 		</el-row>
-		<el-row style="padding:20px;" :gutter="20">
-			<el-col :span="8">
-				<el-card shadow="never">
-					<div slot="header" class="clearfix">
-						<span><font class="primary">{{tempRole.roleName}}</font> 用户</span>
-					</div>
-				</el-card>
-			</el-col>
-			<el-col :span="8">
-				<el-card shadow="never">
-					<div slot="header" class="clearfix">
-					    <span><font class="primary">{{tempRole.roleName}}</font> 权限列表</span>
-					    <el-button v-show="tempRole.id" @click="cancelQxEdit" style="color:#f56c6c;float: right; padding: 3px 0;"  type="text">取消编辑</el-button>
+		
+		<el-dialog
+		  title="提示"
+		  :visible.sync="dialog1"
+		  @close = "cancledialog"
+		  width="30%">
+		  <el-form v-loading="loading" ref="form" :model="role" :rules="rules" label-width="80px">
+		  	<el-form-item label="角色名称" prop="roleName">
+		  		<el-input v-model="role.roleName"></el-input>
+		  	</el-form-item>
+		  	<el-form-item label="角色描述">
+		  		<el-input  type="textarea"  v-model="role.desc"></el-input>
+		  	</el-form-item>
+			<el-form-item label="角色权限">
+		  		<el-input  value="成功添加角色后方可配置权限." disabled></el-input>
+		  	</el-form-item>
+			  
+		  </el-form>
+		  <span slot="footer" class="dialog-footer">
+		    <el-button @click="cancledialog">取 消</el-button>
+		    <el-button type="primary" @click="doSaveRole">确 定</el-button>
+		  </span>
+		</el-dialog>
+		<el-dialog
+			title="权限修改"
+			:visible.sync="dialog2"
+			@close="cancledialog2"
+			width="30%">
+			<div slot="header" class="clearfix">
+					    <span><font class="primary">{{role.roleName}}</font> 权限列表</span>
+					    <el-button v-show="role.id" @click="cancelQxEdit" style="color:#f56c6c;float: right; padding: 3px 0;"  type="text">取消编辑</el-button>
 				    </div>
-					<el-tree
-						ref="tree"
-						default-expand-all
-					    :data="treeData"
-					    show-checkbox
-					    node-key="id"
-  						:default-checked-keys="checkKeys"
-					    :props="defaultProps">
-					</el-tree>
-					<div class="bottom clearfix" style="margin-top:20px;border-top:1px solid #e5e5e5;padding-top:20px;text-align:right;">
-			            <el-button @click="resetTree">恢复</el-button>					
-						<el-button  :loading="btnLoading" @click="saveQx" type="primary">保存</el-button>
-					</div>	
-				</el-card>
-			</el-col>
-		</el-row>
+					<el-card shadow="never">
+						<el-tree
+							ref="tree"
+							default-expand-all
+							:data="treeData"
+							show-checkbox
+							node-key="id"
+							:default-checked-keys="checkKeys"
+							:props="defaultProps">
+						</el-tree>
+					</el-card>
+					
+			        
+					<span slot="footer" class="dialog-footer">
+					<el-button @click="cancledialog2">取 消</el-button>
+					<el-button @click="resetTree" type="warning" plain>恢复</el-button>	
+					<el-button type="primary" @click="doSaveMenu">确 定</el-button>
+				</span>				
+		</el-dialog>
+
 	</div>
 </template>
 
@@ -71,6 +128,8 @@
 			return {
 				roleList:[],
 				loading:false,
+				dialog1:false,
+				dialog2:false,
 				btnLoading:false,
 				role:{
 					id:'',
@@ -90,7 +149,15 @@
 		        tempRole:{
 		        	id:'',
 		        	roleName:''
-		        },
+				},
+				rules:{
+					roleName:[
+						{required:true,message:'角色不能为空',trigger:'blur'},
+						{min:3,max:20,message:'长度为3~20',trigger:'blur'}],
+					desc:[
+						{max:200,message:'不能超过200字符',trigger:'blur'}
+					]
+				}
 			}
 		},
 		computed:{
@@ -110,17 +177,26 @@
 				this.dialog1 = false;
 				resetObj(this.role);
 			},
-			goAdd(row){
+			
+			goEditRoll(row){
+				//修改
 				if(row){
-					this.role = row;
+					//clone副本很重要!!!
+					this.role = Object.assign({},row);
 				}
 				this.dialog1 = true;
 			},
-			doAdd(){
+			doSaveRole(){
 				this.$refs.form.validate(valid=>{
-					if(valid){
+					if(true){
 						this.loading = true;
-						roleApi.add({role:this.role})
+						var api;
+						if(this.role.id){
+							api = roleApi.updateRole;
+						}else{
+							api = roleApi.saveRole;
+						}
+						api({role:this.role})
 							.then(res=>{
 								if(res.data.code=="success"){
 									this.$message.success('保存成功!');
@@ -143,14 +219,28 @@
 						this.menuList = res.data.data;
 					})
 			},
-			showUserList(){
-
+			goDel(row){
+				this.$confirm('确定删除角色:'+row.roleName+'?', '提示', {
+					confirmButtonText: '确定',
+					cancelButtonText: '取消',
+					type: 'danger'
+					}).then(()=>{
+						roleApi.delRole({roleId:row.id})
+							.then(res=>{
+								if(res.data.code=="success"){
+									this.getRoleList();
+								}else{
+									this.$message.error('删除失败!')
+								}
+							})
+					})
 			},
-			showQx(role){
-				this.tempRole = {
-					id:role.id,
-					roleName:role.roleName
-				}
+			goEditQx(row){
+				this.role = Object.assign({},row);
+				this.dialog2 = true;
+				this.getMenuByRole(this.role);
+			},
+			getMenuByRole(role){
 				roleApi.getMenuByRole({roleId:role.id})
 					.then(res=>{
 						var ids = [];
@@ -159,20 +249,18 @@
 								ids.push(item.menuId);
 							})
 						}
-						this.tempRole.qx = ids;
 						this.$refs.tree.setCheckedKeys(ids);
-						
 					})
 			},
-			saveQx(){
-				if(!this.tempRole.id){
+			doSaveMenu(){
+				if(!this.role.id){
 					this.$message.error('没有选中角色!');
 					return;
 				}
 				this.btnLoading = true;
-				var keys = this.$refs.tree.getCheckedKeys();
+				var keys = this.$refs.tree.getCheckedKeys()||[];
 				roleApi.saveMenuByRole({
-					roleId:this.tempRole.id,
+					roleId:this.role.id,
 					menuIds:keys
 				}).then(res=>{
 						if(res.data.code=='success'){
@@ -180,14 +268,16 @@
 						}else{
 							this.$message.error('保存失败!');
 						}
-						setTimeout(()=>{
-						   this.btnLoading = false;		
-						}, 1500);
+						this.dialog2 = false;
 					})
 
 			},
 			resetTree(){
 				this.$refs.tree.setCheckedKeys(this.tempRole.qx);
+			},
+			cancledialog2(){
+				this.dialog2 = false;
+				resetObj(this.role);
 			},
 			cancelQxEdit(){
 				resetObj(this.tempRole);

@@ -91,6 +91,27 @@ function roleList(data){
     data
   })
 }
+function saveRole(data){
+  return request({
+    url:'/api/role/save',
+    method: 'post',
+    data
+  })
+}
+function updateRole(data){
+  return request({
+    url:'/api/role/update',
+    method: 'post',
+    data
+  })
+}
+function delRole(data){
+  return request({
+    url:'/api/role/del',
+    method: 'get',
+    data
+  })
+}
 
 function getMenuByRole(data){
   return request({
@@ -126,5 +147,8 @@ export var menuApi = {
 export var roleApi = {
   roleList,
   getMenuByRole,
-  saveMenuByRole
+  saveMenuByRole,
+  saveRole,
+  updateRole,
+  delRole
 }
